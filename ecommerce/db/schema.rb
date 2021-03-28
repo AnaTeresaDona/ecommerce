@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_23_004750) do
+ActiveRecord::Schema.define(version: 2021_03_28_002642) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -31,6 +31,8 @@ ActiveRecord::Schema.define(version: 2019_07_23_004750) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "category_id"
+    t.index ["category_id"], name: "index_categories_on_category_id"
   end
 
   create_table "categories_products", id: false, force: :cascade do |t|
@@ -40,15 +42,22 @@ ActiveRecord::Schema.define(version: 2019_07_23_004750) do
     t.index ["product_id", "category_id"], name: "index_categories_products_on_product_id_and_category_id"
   end
 
+  create_table "colors", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "order_items", force: :cascade do |t|
     t.bigint "order_id"
-    t.bigint "product_id"
+    t.bigint "variant_id"
     t.integer "quantity"
     t.decimal "price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["order_id"], name: "index_order_items_on_order_id"
-    t.index ["product_id"], name: "index_order_items_on_product_id"
+    t.index ["variant_id"], name: "index_order_items_on_variant_id"
   end
 
   create_table "orders", force: :cascade do |t|
@@ -90,6 +99,13 @@ ActiveRecord::Schema.define(version: 2019_07_23_004750) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "sizes", force: :cascade do |t|
+    t.string "name"
+    t.string "code"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -102,9 +118,25 @@ ActiveRecord::Schema.define(version: 2019_07_23_004750) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "variants", force: :cascade do |t|
+    t.integer "stock"
+    t.bigint "product_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "size_id"
+    t.bigint "color_id"
+    t.index ["color_id"], name: "index_variants_on_color_id"
+    t.index ["product_id"], name: "index_variants_on_product_id"
+    t.index ["size_id"], name: "index_variants_on_size_id"
+  end
+
+  add_foreign_key "categories", "categories"
   add_foreign_key "order_items", "orders"
-  add_foreign_key "order_items", "products"
+  add_foreign_key "order_items", "products", column: "variant_id"
   add_foreign_key "orders", "users"
   add_foreign_key "payments", "orders"
   add_foreign_key "payments", "payment_methods"
+  add_foreign_key "variants", "colors"
+  add_foreign_key "variants", "products"
+  add_foreign_key "variants", "sizes"
 end
