@@ -5,13 +5,13 @@ class Product < ApplicationRecord
 
   #Crear un método para especificar si los productos son o no visibles (cada variant tiene un stock asociado. Si tienen stock, se muestran, si no, no)
   def visible_on_catalog?
-    self.variants.each do |variant|
-      if variant.stock > 0
-        returns true
-      else  
-        false
-      end
-    end
+    #Si hay stock, devuelvo true, si no, no.
+
+    contador = 0
+    self.variants.map{|variant| contador += variant.stock}
+
+    (contador > 0) ? false : true
+    
   end
 
   # has_many :order_items
