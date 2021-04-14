@@ -10,10 +10,8 @@ class Category < ApplicationRecord
   #scope :with_juice, -> { where("juice > 0") }
 
   #crear un método que traiga a los hijos y a los hijos de los hijos (bíblico el tema)
-  #El map rutea del primer al segundo elementos. Si tengo un arreglo de cosas, map va a ir buscando uno por uno. Crea un registro más grande que el flat_map.
-  # el flatMap o concatMap convierte cada uno de los elementos que busco en una estructura con el elemento del inicial. En este caso se aplica porque cada una de las categorías que recorro es una categoría.
   def all_children  
-    self.children.flat_map do |child|
+    self.children.map do |child|
       child.all_children << child 
     end
   end
